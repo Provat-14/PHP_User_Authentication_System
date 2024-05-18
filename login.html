@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="assets/js/logout.js"></script>
+    <title>Login Page</title>
+</head>
+<body>
+    <div class="box">
+        <span class="borderLine"></span>
+        <form id="loginForm" method="POST" style=" padding-top: 30px; ">
+            <h2><img src="assets/img/favicon.png" alt="" width="100"></h2>
+            <p id="offline">sign in</p>
+            <div class="inputBox">
+                <input type="text"  name="userId" placeholder="UserID" required autocomplete="off">
+                <i></i>
+            </div>
+
+            <div class="inputBox">
+                <input type="password"  name="pass" placeholder="Password" required autocomplete="off">
+                <i></i>
+            </div>
+
+            <div class="links">
+                <a href="forget.php">Forgot Password</a>
+                <a href="reg.html">Signup</a>
+            </div>
+
+            <input type="submit" value="sign in">
+
+        </form>
+    </div>  
+    
+    <script>
+        $(document).ready(function(){
+            $('#loginForm').submit(function(event) {
+                event.preventDefault();
+                $('input[type="submit"]').prop('disabled', true).val('Loading...');
+                var formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: 'backend/login.php',
+                    data: formData,
+                    success: function(rep) {
+                        var response = JSON.parse(rep);
+                        if (response.sId) {
+                            localStorage.setItem("sessionID", response.sId);
+                            window.location.href = 'index.php';                            
+                        } else {
+                            console.log(response.error_text);
+                            $('input[type="submit"]').prop('disabled', false).val('sign in');
+                            $('#loginForm')[0].reset();
+                            $('#offline').text(response.error_text);
+                            alert(response.error_text);                            
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('input[type="submit"]').prop('disabled', false).val('sign in');
+                        $('#loginForm')[0].reset();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

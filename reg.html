@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+    <script src="assets/js/logout.js"></script>
+    <title>Registration Page</title>
+</head>
+<body>
+    <div class="box">
+        <span class="borderLine"></span>
+        <form id="registrationForm" method="POST" style="padding-top: 30px;">
+            <h2><img src="assets/img/favicon.png" alt="" width="100"></h2>
+            <p id="offline">Signup</p>
+            <div class="inputBox">
+                <input type="text" name="name" placeholder="Name" required autocomplete="off">
+                <i></i>
+            </div>
+
+            <div class="inputBox">
+                <input type="email" name="email" placeholder="Email"  autocomplete="off">
+                <i></i>
+            </div>
+
+            <div class="inputBox">
+                <input type="password" name="password" placeholder="Password" required autocomplete="off">
+                <i></i>
+            </div>
+
+            <div class="inputBox">
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required autocomplete="off">
+                 
+                <i></i>
+            </div><span id="password_error" style="color: red;"></span>
+
+            <div class="links">                
+                <input type="submit" value="Signup">
+                <a href="login.html">SignIn</a>
+            </div>
+
+        </form>
+    </div>  
+    
+    <script>
+        $(document).ready(function(){
+            $('#registrationForm').submit(function(event) {                
+                event.preventDefault();  
+                $('input[type="submit"]').prop('disabled', true).val('Loading...');              
+                var formData = $(this).serialize();
+                var password = $('input[name="password"]').val();
+                var confirm_password = $('input[name="confirm_password"]').val();
+
+                if (password != confirm_password) {
+                    $('#password_error').text("Passwords do not match");                    
+                    $('#offline').text("Passwords do not match");                     
+                    $('input[type="submit"]').prop('disabled', false).val('Signup');
+                    return;
+                }  
+                $.ajax({
+                    type: 'POST',
+                    url: 'backend/reg.php',
+                    data: formData,
+                    success: function(response) {                        
+                        if(response=="success"){
+                            alert("Registration successful. You can login now.");
+                            window.location.href = 'login.html';
+                            $('input[type="submit"]').prop('disabled', false).val('Signup');
+                        }else{
+                            var data = JSON.parse(response);
+                            var error_mail = data.error_email;
+                            if (error_mail) {
+                                console.log(error_mail);
+                                $('input[type="submit"]').prop('disabled', false).val('Signup');
+                                $('#offline').text(data.error_text);                          
+                                alert(data.error_text);
+                            } else {
+                                $('input[type="submit"]').prop('disabled', false).val('Signup');
+                                $('#offline').text(data.error_text);                          
+                                alert(data.error_text); 
+                                
+                            }     
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('input[type="submit"]').prop('disabled', false).val('Signup');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
