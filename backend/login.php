@@ -22,7 +22,6 @@ if (isset($_POST["userId"])){
                     $_SESSION['loginTime'] = time();
                     setcookie('login', $id, time() + (86400 * 30), "/");
                     setcookie('login', $id, time() + (86400 * 30), "../");
-                    setcookie('login', $id, time() + (86400 * 30), "../books");
                     
                     $sql = "SELECT * FROM `users_login` WHERE `id` = $id LIMIT 1";
                     $result = mysqli_query($con, $sql);
